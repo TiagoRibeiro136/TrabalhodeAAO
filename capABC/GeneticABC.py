@@ -57,7 +57,7 @@ def fitness(solution, data):
 def initialize_population(data, pop_size):
     population = []
     num_warehouses = len(data['warehouses'])
-    
+    # Gera uma solução aleatória para cada cliente
     for _ in range(pop_size):
         solution = [random.randint(0, num_warehouses - 1) for _ in range(len(data['customers']))]
         population.append(solution)
@@ -67,13 +67,13 @@ def initialize_population(data, pop_size):
 def select_parents(population, fitnesses, num_parents):
     selected_indices = random.choices(range(len(population)), weights=fitnesses, k=num_parents)
     return [population[i] for i in selected_indices]
-
+# Função de crossover
 def crossover(parent1, parent2):
     point = random.randint(1, len(parent1) - 2)
     child1 = parent1[:point] + parent2[point:]
     child2 = parent2[:point] + parent1[point:]
     return child1, child2
-
+# Função de mutação para introduzir variação
 def mutate(solution, mutation_rate, num_warehouses):
     for i in range(len(solution)):
         if random.random() < mutation_rate:
@@ -85,7 +85,7 @@ def genetic_algorithm(data, pop_size=100, generations=1000, mutation_rate=0.01):
     population = initialize_population(data, pop_size)
     best_solution = None
     best_fitness = float('inf')
-
+    # Calcula a fitness de cada solução na população
     for generation in range(generations):
         fitnesses = [1 / (fitness(solution, data) + 1e-9) for solution in population]
         parents = select_parents(population, fitnesses, pop_size // 2)
@@ -93,7 +93,9 @@ def genetic_algorithm(data, pop_size=100, generations=1000, mutation_rate=0.01):
         next_population = []
         while len(next_population) < pop_size:
             parent1, parent2 = random.sample(parents, 2)
+            # Aplica crossover
             child1, child2 = crossover(parent1, parent2)
+            # Aplica mutação aos filhos
             mutate(child1, mutation_rate, len(data['warehouses']))
             mutate(child2, mutation_rate, len(data['warehouses']))
             next_population.append(child1)
@@ -101,7 +103,7 @@ def genetic_algorithm(data, pop_size=100, generations=1000, mutation_rate=0.01):
                 next_population.append(child2)
 
         population = next_population
-
+        # Atualiza a melhor solução encontrada
         for solution in population:
             current_fitness = fitness(solution, data)
             if current_fitness < best_fitness:
@@ -112,7 +114,7 @@ def genetic_algorithm(data, pop_size=100, generations=1000, mutation_rate=0.01):
     execution_time = end_time - start_time
     
     return best_solution, best_fitness, execution_time
-
+# Função para formatar os resultados
 def format_output(best_solution, total_value):
     output = " ".join(map(str, best_solution)) + " "
     output += f"{total_value:.5f}"

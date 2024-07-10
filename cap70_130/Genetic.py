@@ -83,15 +83,17 @@ def genetic_algorithm(data, pop_size=100, generations=2000, mutation_rate=0.01):
     start_time = time.time()
     
     population = initialize_population(data, pop_size)
-    best_solution = None
-    best_fitness = float('inf')
+    best_solution = None # Melhor solução encontrada
+    best_fitness = float('inf')# Melhor valor de fitness inicialmente definido como infinito
     # Calcula a fitness de cada solução na população
     for generation in range(generations):
+        # Calcula o fitness de cada solução na população
         fitnesses = [1 / (fitness(solution, data) + 1e-9) for solution in population]
         # Seleciona os pais
         parents = select_parents(population, fitnesses, pop_size // 2)
 
         next_population = []
+        # Realiza crossover e mutação
         while len(next_population) < pop_size:
             parent1, parent2 = random.sample(parents, 2)
             # Aplica crossover
@@ -115,6 +117,7 @@ def genetic_algorithm(data, pop_size=100, generations=2000, mutation_rate=0.01):
     execution_time = end_time - start_time
     return best_solution, best_fitness, execution_time
 
+# Função para formatar os resultados
 def format_output(best_solution, total_value):
     output = " ".join(map(str, best_solution)) + " "
     output += f"{total_value:.5f}"

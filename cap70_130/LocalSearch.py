@@ -4,28 +4,31 @@ def read_data(filename):
     with open(filename, 'r') as file:
         lines = file.readlines()
 
+    # Extrair o número de armazéns e clientes
     m, n = map(int, lines[0].split())
     data = {'warehouses': [], 'customers': []}
 
     # Leitura dos armazéns
     for i in range(1, m + 1):
-        capacity, fixed_cost = lines[i].split()
-        data['warehouses'].append({'capacity': float(capacity), 'fixed_cost': float(fixed_cost), 'allocated': 0, 'opened': False})
+        parts = lines[i].split()
+        capacity = float(parts[0])  # Capacidade (não necessária)
+        fixed_cost = float(parts[1])  # Custo fixo
+        data['warehouses'].append({'capacity': capacity, 'fixed_cost': fixed_cost, 'allocated': 0, 'opened': False})
 
     line_index = m + 1
     while line_index < len(lines):
-        # Leitura da demanda do cliente
-        demand = lines[line_index].strip()
+        # Leitura da demanda do cliente (ignorada, pois não é necessária)
+        customer_number = int(lines[line_index].strip())
         line_index += 1
 
-        # Leitura dos custos
+        # Leitura dos custos de alocação do cliente para cada armazém
         costs = []
         while line_index < len(lines) and not lines[line_index].strip().isdigit():
-            costs.extend(lines[line_index].strip().split())
+            costs.extend(map(float, lines[line_index].strip().split()))
             line_index += 1
 
-        # Adicionar o cliente à lista com a demanda e os custos combinados
-        data['customers'].append({'demand': float(demand), 'costs': [float(cost) for cost in costs]})
+        # Adicionar o cliente à lista com os custos combinados
+        data['customers'].append({'demand': 0, 'costs': costs})
 
     return data
 
@@ -52,15 +55,16 @@ def calculate_total_cost(solution, warehouses, customers):
 def local_search(initial_solution, warehouses, customers):
     start_time = time.time()
     
-    current_solution = initial_solution[:]
+    current_solution = initial_solution[:]  # Copia da solução inicial
     best_solution = current_solution[:]
     best_cost = calculate_total_cost(best_solution, warehouses, customers)
     
     while True:
-        found_better = False
+        found_better = False  # Indicador se foi encontrada uma solução melhor
         for customer_idx in range(len(customers)):
-            current_warehouse_idx = current_solution[customer_idx]
+            current_warehouse_idx = current_solution[customer_idx]  # Índice do armazém atual do cliente
             
+            # Testa mover o cliente
             for new_warehouse_idx in range(len(warehouses)):
                 if new_warehouse_idx != current_warehouse_idx:
                     # Verificar se a mudança é viável
@@ -72,8 +76,8 @@ def local_search(initial_solution, warehouses, customers):
                     customer = customers[customer_idx]
                     
                     if warehouse['capacity'] >= customer['demand']:
-                        new_cost = calculate_total_cost(new_solution, warehouses, customers)
-                        
+                        new_cost = calculate_total_cost(new_solution, warehouses, customers)  # Calcula o custo da nova solução
+                        # Atualiza as soluções
                         if new_cost < best_cost:
                             best_solution = new_solution[:]
                             best_cost = new_cost
@@ -88,7 +92,6 @@ def local_search(initial_solution, warehouses, customers):
     execution_time = end_time - start_time
     
     return best_solution, best_cost, execution_time
-
 
 def format_output(total_value, selected_items):
     output = ""

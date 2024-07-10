@@ -13,7 +13,7 @@ def read_data(filename):
     for i in range(1, m + 1):
         parts = lines[i].split()
         fixed_cost = float(parts[1])  # Custo fixo
-        data['warehouses'].append({'fixed_cost': fixed_cost})
+        data['warehouses'].append({'fixed_cost': fixed_cost, 'opened': False})
 
     line_index = m + 1
     while line_index < len(lines):
@@ -50,17 +50,39 @@ def calculate_total_cost(solution, warehouses, customers):
     
     return total_cost
 
-def local_search(initial_solution, warehouses, customers):
-    start_time = time.time()
+def greedy_randomized_construction(data, seed):
+    random.seed(seed)
+    warehouses = data['warehouses']
+    customers = data['customers']
+    solution = [-1] * len(customers)
     
+    for customer_idx, customer in enumerate(customers):
+        candidates = []
+        
+        for warehouse_idx, warehouse in enumerate(warehouses):
+            cost = warehouse['fixed_cost'] if not warehouse['opened'] else 0
+            cost += customer['costs'][warehouse_idx]
+            candidates.append((cost, warehouse_idx))
+        
+        candidates.sort()
+        
+        alpha = 0.1  # Parâmetro de aleatoriedade
+        rcl_size = max(1, int(alpha * len(candidates)))
+        selected = random.choice(candidates[:rcl_size])
+        
+        selected_warehouse = selected[1]
+        solution[customer_idx] = selected_warehouse
+        
+        if not warehouses[selected_warehouse]['opened']:
+            warehouses[selected_warehouse]['opened'] = True
+    
+    return solution
+
+def local_search(initial_solution, warehouses, customers):
     current_solution = initial_solution[:]
     best_solution = current_solution[:]
     best_cost = calculate_total_cost(best_solution, warehouses, customers)
     
-    print(f"Initial Solution: {best_solution}")
-    print(f"Initial Cost: {best_cost:.5f}")
-    print("")
-
     while True:
         found_better = False
         for customer_idx in range(len(customers)):
@@ -77,41 +99,45 @@ def local_search(initial_solution, warehouses, customers):
                         best_solution = new_solution[:]
                         best_cost = new_cost
                         found_better = True
-                        print(f"Found better solution:")
-                        print(f"  Solution: {best_solution}")
-                        print(f"  Cost: {best_cost:.5f}")
-                        print("")
         
         if not found_better:
             break
         else:
             current_solution = best_solution[:]
     
-    end_time = time.time()
-    execution_time = end_time - start_time
-    
-    return best_solution, best_cost, execution_time
+    return best_solution, best_cost
 
-def generate_random_solution(num_customers, num_warehouses):
-    return [random.randint(0, num_warehouses - 1) for _ in range(num_customers)]
+def grasp(filename, max_iterations, seed):
+    data = read_data(filename)
+    best_solution = None
+    best_cost = float('inf')
+    
+    for _ in range(max_iterations):
+        warehouses_copy = [wh.copy() for wh in data['warehouses']]  # Cria uma cópia dos armazéns
+        initial_solution = greedy_randomized_construction({'warehouses': warehouses_copy, 'customers': data['customers']}, seed)
+        
+        solution, cost = local_search(initial_solution, data['warehouses'], data['customers'])
+        
+        if cost < best_cost:
+            best_solution = solution
+            best_cost = cost
+    
+    return best_solution, best_cost
 
 def main(filename):
-    data = read_data(filename)
-    num_customers = len(data['customers'])
-    num_warehouses = len(data['warehouses'])
+    max_iterations = 100
+    seed = 42
     
-    # Gera uma solução inicial aleatória
-    initial_solution = generate_random_solution(num_customers, num_warehouses)
+    best_solution, best_cost = grasp(filename, max_iterations, seed)
     
-    # Executa a pesquisa local usando a solução inicial aleatória
-    best_solution, best_cost, execution_time = local_search(initial_solution, data['warehouses'], data['customers'])
-    
-    # Exibe o resultado da pesquisa local
-    print("\nMelhor solução encontrada pela Pesquisa Local:")
-    print(f"Solução: {best_solution}")
+    # Exibe o resultado do GRASP
+    print(f"Solução: {' '.join(map(str, best_solution))}")
     print(f"Custo: {best_cost:.5f}")
-    print(f"Tempo de execução: {execution_time:.5f} segundos")
+
+    # Salva a solução encontrada pelo GRASP no arquivo initial_solution.txt
+    # with open('capABC/initial_solution.txt', 'w') as file:
+    #     file.write(' '.join(map(str, best_solution)))
 
 if __name__ == "__main__":
-    filename = "FicheirosTeste/ORLIB/cap103.txt"  # Nome do arquivo de entrada
+    filename = "FicheirosTeste/ORLIB/cap72.txt"
     main(filename)
