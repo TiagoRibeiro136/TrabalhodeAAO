@@ -5,47 +5,47 @@ def read_data(filename):
     with open(filename, 'r') as file:
         lines = file.readlines()
 
-    # Extrair o número de armazéns e clientes
+    # Extract the number of warehouses and customers
     m, n = map(int, lines[0].split())
     data = {'warehouses': [], 'customers': []}
 
-    # Leitura dos armazéns
+    # Read warehouses
     for i in range(1, m + 1):
         parts = lines[i].split()
-        fixed_cost = float(parts[1])  # Custo fixo
+        fixed_cost = float(parts[1])  # Fixed cost
         data['warehouses'].append({'fixed_cost': fixed_cost})
 
     line_index = m + 1
     while line_index < len(lines):
-        # Leitura do número do cliente (ignorada, pois não é necessária)
+        # Read the customer number (ignored, not necessary)
         customer_number = int(lines[line_index].strip())
         line_index += 1
 
-        # Leitura dos custos de alocação do cliente para cada armazém
+        # Read the allocation costs from the customer to each warehouse
         costs = []
         while line_index < len(lines) and not lines[line_index].strip().isdigit():
             costs.extend(map(float, lines[line_index].strip().split()))
             line_index += 1
 
-        # Adicionar o cliente à lista com os custos combinados
+        # Add the customer to the list with the combined costs
         data['customers'].append({'costs': costs})
 
     return data
 
 def calculate_total_cost(solution, warehouses, customers):
     total_cost = 0
-    warehouse_used = [False] * len(warehouses)  # Lista para rastrear se o armazém foi usado
+    warehouse_used = [False] * len(warehouses)  # Track if the warehouse has been used
     
     for customer_idx, warehouse_idx in enumerate(solution):
         warehouse = warehouses[warehouse_idx]
         customer = customers[customer_idx]
         
-        # Adiciona o custo fixo do armazém se for a primeira vez que o armazém é usado
+        # Add the fixed cost of the warehouse if it is the first time it is used
         if not warehouse_used[warehouse_idx]:
             total_cost += warehouse['fixed_cost']
             warehouse_used[warehouse_idx] = True
         
-        # Adiciona o custo variável do cliente para o armazém atual
+        # Add the variable cost of the customer to the current warehouse
         total_cost += customer['costs'][warehouse_idx]
     
     return total_cost
@@ -67,7 +67,7 @@ def local_search_first_improvement(initial_solution, warehouses, customers):
         for customer_idx in range(len(customers)):
             current_warehouse_idx = current_solution[customer_idx]
             
-            # Tentar cada armazém diferente do atual
+            # Try each warehouse different from the current one
             for new_warehouse_idx in range(len(warehouses)):
                 if new_warehouse_idx != current_warehouse_idx:
                     new_solution = current_solution[:]
@@ -83,7 +83,7 @@ def local_search_first_improvement(initial_solution, warehouses, customers):
                         print(f"  Solution: {best_solution}")
                         print(f"  Cost: {best_cost:.5f}")
                         print("")
-                        break  # Encontramos uma melhoria, podemos parar de procurar para este cliente
+                        break  # Found an improvement, stop looking for this customer
         
         if not found_better:
             break
@@ -103,18 +103,18 @@ def main(filename):
     num_customers = len(data['customers'])
     num_warehouses = len(data['warehouses'])
     
-    # Gera uma solução inicial aleatória
+    # Generate a random initial solution
     initial_solution = generate_random_solution(num_customers, num_warehouses)
     
-    # Executa a busca local usando o método de Primeiro Melhor (First-Improvement)
+    # Execute local search using the First-Improvement method
     best_solution, best_cost, execution_time = local_search_first_improvement(initial_solution, data['warehouses'], data['customers'])
     
-    # Exibe o resultado da busca local
-    print("\nMelhor solução encontrada pela Busca Local (Primeiro Melhor):")
-    print(f"Solução: {best_solution}")
-    print(f"Custo: {best_cost:.5f}")
-    print(f"Tempo de execução: {execution_time:.5f} segundos")
+    # Display the result of the local search
+    print("\nBest solution found by Local Search (First Improvement):")
+    print(f"Solution: {best_solution}")
+    print(f"Cost: {best_cost:.5f}")
+    print(f"Execution time: {execution_time:.5f} seconds")
 
 if __name__ == "__main__":
-    filename = "FicheirosTeste/ORLIB/cap71.txt"  # Nome do arquivo de entrada
+    filename = "FicheirosTeste\M\Kcapmo1.txt"  # New input file name
     main(filename)
