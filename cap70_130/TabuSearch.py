@@ -1,5 +1,6 @@
 import time
 import random
+from collections import deque
 
 def read_data(filename):
     with open(filename, 'r') as file:
@@ -50,45 +51,68 @@ def calculate_total_cost(solution, warehouses, customers):
     
     return total_cost
 
-def local_search_first_improvement(initial_solution, warehouses, customers):
+def tabu_search(initial_solution, warehouses, customers, max_iterations, tabu_tenure, max_no_improvement_iterations):
     start_time = time.time()
     
+    # 2. Inicializar a solução corrente sc e a melhor solução encontrada sb, fazendo sb = sc = s0.
     current_solution = initial_solution[:]
     best_solution = current_solution[:]
     best_cost = calculate_total_cost(best_solution, warehouses, customers)
     
+    # Lista tabu para armazenar soluções recentes
+    tabu_list = deque(maxlen=tabu_tenure)
+    tabu_list.append(tuple(current_solution))
+    iteration = 0
+    no_improvement_iterations = 0
+
     print(f"Initial Solution: {best_solution}")
     print(f"Initial Cost: {best_cost:.5f}")
     print("")
-
-    while True:
-        found_better = False
+    
+    # 3. Inicializar o contador de iterações k = 0.
+    while iteration < max_iterations and no_improvement_iterations < max_no_improvement_iterations:
+        neighborhood = []
         
+        # Gerar vizinhança N(sc)
         for customer_idx in range(len(customers)):
             current_warehouse_idx = current_solution[customer_idx]
-            
-            # Tentar cada armazém diferente do atual
             for new_warehouse_idx in range(len(warehouses)):
                 if new_warehouse_idx != current_warehouse_idx:
                     new_solution = current_solution[:]
                     new_solution[customer_idx] = new_warehouse_idx
-                    
-                    new_cost = calculate_total_cost(new_solution, warehouses, customers)
-                    
-                    if new_cost < best_cost:
-                        best_solution = new_solution[:]
-                        best_cost = new_cost
-                        found_better = True
-                        print(f"Found better solution:")
-                        print(f"  Solution: {best_solution}")
-                        print(f"  Cost: {best_cost:.5f}")
-                        print("")
-                        break  # Encontramos uma melhoria, podemos parar de procurar para este cliente
+                    neighborhood.append((new_solution, calculate_total_cost(new_solution, warehouses, customers)))
+        
+        # 4. Se N(sc) - S(T) != ∅
+        neighborhood = sorted(neighborhood, key=lambda x: x[1])
+        found_better = False
+        
+        for new_solution, new_cost in neighborhood:
+            if tuple(new_solution) not in tabu_list:
+                # Incrementar k e selecionar a melhor solução sp em N(sc) - S(T)
+                current_solution = new_solution[:]
+                tabu_list.append(tuple(current_solution))
+                
+                # 5. Se f(sp) < f(sc), então sb = sp.
+                if new_cost < best_cost:
+                    best_solution = current_solution[:]
+                    best_cost = new_cost
+                    found_better = True
+                    no_improvement_iterations = 0
+                    print(f"Iteration {iteration + 1}: Found better solution:")
+                    print(f"  Solution: {best_solution}")
+                    print(f"  Cost: {best_cost:.5f}")
+                    print("")
+                else:
+                    # 6. Senão, N(sc) = N(sc) - sp
+                    neighborhood = [neighbor for neighbor in neighborhood if tuple(neighbor[0]) != tuple(new_solution)]
+                break
         
         if not found_better:
-            break
-        else:
-            current_solution = best_solution[:]
+            no_improvement_iterations += 1
+        
+        iteration += 1
+        # 7. Atualizar T
+        # A atualização da lista tabu ocorre durante a adição de novos elementos e remoção automática quando o limite é excedido
     
     end_time = time.time()
     execution_time = end_time - start_time
@@ -106,11 +130,14 @@ def main(filename):
     # Gera uma solução inicial aleatória
     initial_solution = generate_random_solution(num_customers, num_warehouses)
     
-    # Executa a busca local usando o método de Primeiro Melhor (First-Improvement)
-    best_solution, best_cost, execution_time = local_search_first_improvement(initial_solution, data['warehouses'], data['customers'])
+    # Executa a Busca Tabu
+    max_iterations = 1000  # Define o número máximo de iterações
+    tabu_tenure = 10  # Define a duração da lista tabu
+    max_no_improvement_iterations = 100  # Define o número máximo de iterações consecutivas sem melhoria
+    best_solution, best_cost, execution_time = tabu_search(initial_solution, data['warehouses'], data['customers'], max_iterations, tabu_tenure, max_no_improvement_iterations)
     
-    # Exibe o resultado da busca local
-    print("\nMelhor solução encontrada pela Busca Local (Primeiro Melhor):")
+    # Exibe o resultado da busca tabu
+    print("\nMelhor solução encontrada pela Busca Tabu:")
     print(f"Solução: {best_solution}")
     print(f"Custo: {best_cost:.5f}")
     print(f"Tempo de execução: {execution_time:.5f} segundos")

@@ -34,7 +34,7 @@ def read_data(filename):
 
 def calculate_total_cost(solution, warehouses, customers):
     total_cost = 0
-    warehouse_used = [False] * len(warehouses)  # Lista para rastrear se o armazém foi usado
+    warehouse_used = [False] * len(warehouses)  # Lista para perceber se o armazém foi usado
     
     for customer_idx, warehouse_idx in enumerate(solution):
         warehouse = warehouses[warehouse_idx]
@@ -113,5 +113,5 @@ def main(filename):
     print(f"Tempo de execução: {execution_time:.5f} segundos")
 
 if __name__ == "__main__":
-    filename = "FicheirosTeste/ORLIB/cap103.txt"  # Nome do arquivo de entrada
+    filename = "FicheirosTeste/ORLIB/cap71.txt"  # Nome do arquivo de entrada
     main(filename)
