@@ -1,147 +1,120 @@
+import time
 import random
-import copy
-
-def generate_random_initial_solution(num_customers, num_warehouses):
-    initial_solution = [random.randint(0, num_warehouses - 1) for _ in range(num_customers)]
-    return initial_solution
 
 def read_data(filename):
     with open(filename, 'r') as file:
         lines = file.readlines()
-    
-    num_warehouses, num_customers = map(int, lines[0].strip().split())
-    
-    warehouse_costs = []
-    warehouse_capacities = []
-    for i in range(1, num_warehouses + 1):
-        parts = list(map(float, lines[i].strip().split()))
-        warehouse_costs.append(parts[0])
-        warehouse_capacities.append(parts[1])
-    
-    customer_demands = []
-    customer_costs = []
-    current_line = num_warehouses + 1
-    while current_line < len(lines):
-        if lines[current_line].strip():
-            try:
-                customer_demands.append(float(lines[current_line].strip()))
-                current_line += 1
-                costs = []
-                while current_line < len(lines) and not lines[current_line].strip().isdigit():
-                    costs.extend(list(map(float, lines[current_line].strip().split())))
-                    current_line += 1
-                customer_costs.append(costs)
-            except ValueError:
-                current_line += 1
-    
-    warehouses = []
-    for i in range(num_warehouses):
-        warehouses.append({
-            'cost': warehouse_costs[i],
-            'capacity': warehouse_capacities[i],
-            'allocated': 0
-        })
-    
-    customers = []
-    for i in range(num_customers):
-        customers.append({
-            'demand': customer_demands[i],
-            'costs': customer_costs[i],
-            'assigned_to': -1
-        })
-    
-    return {'warehouses': warehouses, 'customers': customers}
 
-def first_improvement_search(initial_solution, warehouses, customers, max_iterations=200):
-    current_solution = initial_solution
-    current_cost = calculate_total_cost(current_solution, warehouses, customers)
-    best_solution = current_solution[:]
-    best_cost = current_cost
-    improvement_found = True
-    
-    iteration = 1
-    no_improvement_count = 0
-    max_no_improvement = 1000  # Define um limite para o número de iterações sem melhoria significativa
-    
-    while improvement_found and iteration <= max_iterations:
-        improvement_found = False                                                             
-        
-        for customer_index in range(len(customers)):
-            current_warehouse = current_solution[customer_index]
-            
-            for warehouse_index in range(len(warehouses)):
-                if warehouse_index != current_warehouse:
-                    new_solution = current_solution[:]
-                    new_solution[customer_index] = warehouse_index
-                    
-                    if is_feasible(new_solution, warehouses, customers):
-                        new_cost = calculate_total_cost(new_solution, warehouses, customers)
-                        
-                        if new_cost < best_cost:
-                            current_solution = new_solution[:]
-                            current_cost = new_cost
-                            best_solution = new_solution[:]
-                            best_cost = new_cost
-                            improvement_found = True
-                            no_improvement_count = 0  # Reinicia o contador de iterações sem melhoria
-                            break  # Sai do loop interno para iniciar do primeiro cliente novamente
-            
-            if improvement_found:
-                break  # Sai do loop externo para iniciar do primeiro cliente novamente
-        
-        print(f"Iteration {iteration}: Best cost = {best_cost}")
-        iteration += 1
-        no_improvement_count += 1
-        
-        if no_improvement_count >= max_no_improvement:
-            break  # Sai do loop se não houver melhoria significativa por várias iterações
-    
-    return best_solution, best_cost
+    # Extrair o número de armazéns e clientes
+    m, n = map(int, lines[0].split())
+    data = {'warehouses': [], 'customers': []}
+
+    # Leitura dos armazéns
+    for i in range(1, m + 1):
+        parts = lines[i].split()
+        fixed_cost = float(parts[1])  # Custo fixo
+        data['warehouses'].append({'fixed_cost': fixed_cost})
+
+    line_index = m + 1
+    while line_index < len(lines):
+        # Leitura do número do cliente (ignorada, pois não é necessária)
+        customer_number = int(lines[line_index].strip())
+        line_index += 1
+
+        # Leitura dos custos de alocação do cliente para cada armazém
+        costs = []
+        while line_index < len(lines) and not lines[line_index].strip().isdigit():
+            costs.extend(map(float, lines[line_index].strip().split()))
+            line_index += 1
+
+        # Adicionar o cliente à lista com os custos combinados
+        data['customers'].append({'costs': costs})
+
+    return data
 
 def calculate_total_cost(solution, warehouses, customers):
     total_cost = 0
+    warehouse_used = [False] * len(warehouses)  # Lista para rastrear se o armazém foi usado
     
-    for warehouse in warehouses:
-        warehouse['allocated'] = 0
-    
-    for customer_index, warehouse_index in enumerate(solution):
-        customer = customers[customer_index]
-        warehouse = warehouses[warehouse_index]
-        total_cost += customer['costs'][warehouse_index]
-        warehouse['allocated'] += customer['demand']
-    
-    for warehouse in warehouses:
-        if warehouse['allocated'] > 0:
-            total_cost += warehouse['cost']
+    for customer_idx, warehouse_idx in enumerate(solution):
+        warehouse = warehouses[warehouse_idx]
+        customer = customers[customer_idx]
+        
+        # Adiciona o custo fixo do armazém se for a primeira vez que o armazém é usado
+        if not warehouse_used[warehouse_idx]:
+            total_cost += warehouse['fixed_cost']
+            warehouse_used[warehouse_idx] = True
+        
+        # Adiciona o custo variável do cliente para o armazém atual
+        total_cost += customer['costs'][warehouse_idx]
     
     return total_cost
 
-def is_feasible(solution, warehouses, customers):
-    for warehouse in warehouses:
-        warehouse['allocated'] = 0
+def local_search_first_improvement(initial_solution, warehouses, customers):
+    start_time = time.time()
     
-    for customer_index, warehouse_index in enumerate(solution):
-        customer = customers[customer_index]
-        warehouse = warehouses[warehouse_index]
+    current_solution = initial_solution[:]
+    best_solution = current_solution[:]
+    best_cost = calculate_total_cost(best_solution, warehouses, customers)
+    
+    print(f"Initial Solution: {best_solution}")
+    print(f"Initial Cost: {best_cost:.5f}")
+    print("")
+
+    while True:
+        found_better = False
         
-        if warehouse['allocated'] + customer['demand'] > warehouse['capacity']:
-            return False
-        warehouse['allocated'] += customer['demand']
+        for customer_idx in range(len(customers)):
+            current_warehouse_idx = current_solution[customer_idx]
+            
+            # Tentar cada armazém diferente do atual
+            for new_warehouse_idx in range(len(warehouses)):
+                if new_warehouse_idx != current_warehouse_idx:
+                    new_solution = current_solution[:]
+                    new_solution[customer_idx] = new_warehouse_idx
+                    
+                    new_cost = calculate_total_cost(new_solution, warehouses, customers)
+                    
+                    if new_cost < best_cost:
+                        best_solution = new_solution[:]
+                        best_cost = new_cost
+                        found_better = True
+                        print(f"Found better solution:")
+                        print(f"  Solution: {best_solution}")
+                        print(f"  Cost: {best_cost:.5f}")
+                        print("")
+                        break  # Encontramos uma melhoria, podemos parar de procurar para este cliente
+        
+        if not found_better:
+            break
+        else:
+            current_solution = best_solution[:]
     
-    return True
+    end_time = time.time()
+    execution_time = end_time - start_time
+    
+    return best_solution, best_cost, execution_time
+
+def generate_random_solution(num_customers, num_warehouses):
+    return [random.randint(0, num_warehouses - 1) for _ in range(num_customers)]
 
 def main(filename):
     data = read_data(filename)
-    initial_solution = generate_random_initial_solution(len(data['customers']), len(data['warehouses']))
+    num_customers = len(data['customers'])
+    num_warehouses = len(data['warehouses'])
     
-    print("Initial Solution:", initial_solution)
+    # Gera uma solução inicial aleatória
+    initial_solution = generate_random_solution(num_customers, num_warehouses)
     
-    best_solution, best_cost = first_improvement_search(initial_solution, data['warehouses'], data['customers'])
+    # Executa a busca local usando o método de Primeiro Melhor (First-Improvement)
+    best_solution, best_cost, execution_time = local_search_first_improvement(initial_solution, data['warehouses'], data['customers'])
     
-    print("\nFinal Results:")
-    print("Best solution:", best_solution)
-    print("Best cost:", best_cost)
+    # Exibe o resultado da busca local
+    print("\nMelhor solução encontrada pela Busca Local (Primeiro Melhor):")
+    print(f"Solução: {best_solution}")
+    print(f"Custo: {best_cost:.5f}")
+    print(f"Tempo de execução: {execution_time:.5f} segundos")
 
 if __name__ == "__main__":
-    filename = "FicheirosTeste/ORLIB/cap133.txt"
+    filename = "FicheirosTeste/ORLIB/cap103.txt"  # Nome do arquivo de entrada
     main(filename)
