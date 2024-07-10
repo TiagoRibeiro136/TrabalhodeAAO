@@ -8,10 +8,10 @@ def read_data(filename):
     m, n = map(int, lines[0].split())
     data = {'warehouses': [], 'customers': []}
 
-    # Leitura dos armazéns
+    # Leitura dos armazéns (ignorando a capacidade)
     for i in range(1, m + 1):
         capacity, fixed_cost = lines[i].split()
-        data['warehouses'].append({'capacity': float(capacity), 'fixed_cost': float(fixed_cost), 'allocated': 0, 'opened': False})
+        data['warehouses'].append({'fixed_cost': float(fixed_cost), 'opened': False})
 
     line_index = m + 1
     while line_index < len(lines):
@@ -32,12 +32,11 @@ def read_data(filename):
 
 def fitness(solution, data):
     total_cost = 0
-    warehouse_usage = [0] * len(data['warehouses'])
 
     for i, customer in enumerate(data['customers']):
         warehouse_idx = solution[i]
         if warehouse_idx >= len(data['warehouses']):
-            return float('inf')  # Invalid solution
+            return float('inf')  # Solução inválida
         warehouse = data['warehouses'][warehouse_idx]
         
         # Verifica se o armazém já está aberto para este cliente
@@ -45,19 +44,13 @@ def fitness(solution, data):
             total_cost += warehouse['fixed_cost']
             warehouse['opened'] = True
         
-        # Verifica se o armazém tem capacidade suficiente para atender o cliente
-        if warehouse_usage[warehouse_idx] + customer['demand'] > warehouse['capacity']:
-            return float('inf')  # Invalid solution
-        
         total_cost += customer['costs'][warehouse_idx]
-        warehouse_usage[warehouse_idx] += customer['demand']
 
     return total_cost
 
 def initialize_population(data, pop_size):
     population = []
     num_warehouses = len(data['warehouses'])
-    # Gera uma solução aleatória para cada cliente
     for _ in range(pop_size):
         solution = [random.randint(0, num_warehouses - 1) for _ in range(len(data['customers']))]
         population.append(solution)
@@ -67,13 +60,13 @@ def initialize_population(data, pop_size):
 def select_parents(population, fitnesses, num_parents):
     selected_indices = random.choices(range(len(population)), weights=fitnesses, k=num_parents)
     return [population[i] for i in selected_indices]
-# Função de crossover
+
 def crossover(parent1, parent2):
     point = random.randint(1, len(parent1) - 2)
     child1 = parent1[:point] + parent2[point:]
     child2 = parent2[:point] + parent1[point:]
     return child1, child2
-# Função de mutação para introduzir variação
+
 def mutate(solution, mutation_rate, num_warehouses):
     for i in range(len(solution)):
         if random.random() < mutation_rate:
@@ -83,22 +76,17 @@ def genetic_algorithm(data, pop_size=100, generations=2000, mutation_rate=0.01):
     start_time = time.time()
     
     population = initialize_population(data, pop_size)
-    best_solution = None # Melhor solução encontrada
-    best_fitness = float('inf')# Melhor valor de fitness inicialmente definido como infinito
-    # Calcula a fitness de cada solução na população
+    best_solution = None
+    best_fitness = float('inf')
+    
     for generation in range(generations):
-        # Calcula o fitness de cada solução na população
         fitnesses = [1 / (fitness(solution, data) + 1e-9) for solution in population]
-        # Seleciona os pais
         parents = select_parents(population, fitnesses, pop_size // 2)
 
         next_population = []
-        # Realiza crossover e mutação
         while len(next_population) < pop_size:
             parent1, parent2 = random.sample(parents, 2)
-            # Aplica crossover
             child1, child2 = crossover(parent1, parent2)
-            # Aplica mutação aos filhos
             mutate(child1, mutation_rate, len(data['warehouses']))
             mutate(child2, mutation_rate, len(data['warehouses']))
             next_population.append(child1)
@@ -106,7 +94,7 @@ def genetic_algorithm(data, pop_size=100, generations=2000, mutation_rate=0.01):
                 next_population.append(child2)
 
         population = next_population
-        # Atualiza a melhor solução encontrada
+
         for solution in population:
             current_fitness = fitness(solution, data)
             if current_fitness < best_fitness:
@@ -117,7 +105,6 @@ def genetic_algorithm(data, pop_size=100, generations=2000, mutation_rate=0.01):
     execution_time = end_time - start_time
     return best_solution, best_fitness, execution_time
 
-# Função para formatar os resultados
 def format_output(best_solution, total_value):
     output = " ".join(map(str, best_solution)) + " "
     output += f"{total_value:.5f}"
@@ -126,7 +113,7 @@ def format_output(best_solution, total_value):
 def main(filename):
     data = read_data(filename)
     
-    best_solution, best_fitness, execution_time = genetic_algorithm(data)
+    best_solution, best_fitness, execution_time = genetic_algorithm(data, pop_size=50, generations=100, mutation_rate=0.01)
     
     print("\nMelhor solução encontrada pelo Algoritmo Genético:")
     print(f"Solução: {best_solution}")
@@ -138,5 +125,5 @@ def main(filename):
     print(output)
 
 if __name__ == "__main__":
-    filename = "FicheirosTeste/ORLIB/cap71.txt"
+    filename = "FicheirosTeste/M/Kcapmo1.txt"
     main(filename)

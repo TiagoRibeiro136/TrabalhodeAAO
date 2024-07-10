@@ -2,6 +2,7 @@ import time
 import random
 
 def read_data(filename):
+    print(f"Lendo dados do arquivo: {filename}")
     with open(filename, 'r') as file:
         lines = file.readlines()
 
@@ -30,6 +31,7 @@ def read_data(filename):
         # Adicionar o cliente à lista com os custos combinados
         data['customers'].append({'costs': costs})
 
+    print("Leitura dos dados concluída.")
     return data
 
 def calculate_total_cost(solution, warehouses, customers):
@@ -82,7 +84,9 @@ def local_search(initial_solution, warehouses, customers):
     current_solution = initial_solution[:]
     best_solution = current_solution[:]
     best_cost = calculate_total_cost(best_solution, warehouses, customers)
+    print(f"Inicializando busca local. Custo inicial: {best_cost:.5f}")
     
+    iteration = 0
     while True:
         found_better = False
         for customer_idx in range(len(customers)):
@@ -99,12 +103,16 @@ def local_search(initial_solution, warehouses, customers):
                         best_solution = new_solution[:]
                         best_cost = new_cost
                         found_better = True
+                        print(f"Iteração {iteration}: Encontrada melhor solução com custo {best_cost:.5f}")
         
         if not found_better:
             break
         else:
             current_solution = best_solution[:]
+        
+        iteration += 1
     
+    print("Busca local concluída.")
     return best_solution, best_cost
 
 def grasp(filename, max_iterations, seed):
@@ -112,7 +120,8 @@ def grasp(filename, max_iterations, seed):
     best_solution = None
     best_cost = float('inf')
     
-    for _ in range(max_iterations):
+    for iteration in range(max_iterations):
+        print(f"Iniciando iteração {iteration + 1} do GRASP")
         warehouses_copy = [wh.copy() for wh in data['warehouses']]  # Cria uma cópia dos armazéns
         initial_solution = greedy_randomized_construction({'warehouses': warehouses_copy, 'customers': data['customers']}, seed)
         
@@ -121,6 +130,7 @@ def grasp(filename, max_iterations, seed):
         if cost < best_cost:
             best_solution = solution
             best_cost = cost
+            print(f"Nova melhor solução encontrada na iteração {iteration + 1} com custo {best_cost:.5f}")
     
     return best_solution, best_cost
 
@@ -139,5 +149,5 @@ def main(filename):
     #     file.write(' '.join(map(str, best_solution)))
 
 if __name__ == "__main__":
-    filename = "FicheirosTeste/ORLIB/cap72.txt"
+    filename = "FicheirosTeste/ORLIB/capa.txt"
     main(filename)

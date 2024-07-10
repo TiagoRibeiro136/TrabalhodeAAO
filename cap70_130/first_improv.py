@@ -50,7 +50,7 @@ def calculate_total_cost(solution, warehouses, customers):
     
     return total_cost
 
-def local_search(initial_solution, warehouses, customers):
+def local_search_first_improvement(initial_solution, warehouses, customers):
     start_time = time.time()
     
     current_solution = initial_solution[:]
@@ -63,9 +63,11 @@ def local_search(initial_solution, warehouses, customers):
 
     while True:
         found_better = False
+        
         for customer_idx in range(len(customers)):
             current_warehouse_idx = current_solution[customer_idx]
             
+            # Tentar cada armazém diferente do atual
             for new_warehouse_idx in range(len(warehouses)):
                 if new_warehouse_idx != current_warehouse_idx:
                     new_solution = current_solution[:]
@@ -81,6 +83,7 @@ def local_search(initial_solution, warehouses, customers):
                         print(f"  Solution: {best_solution}")
                         print(f"  Cost: {best_cost:.5f}")
                         print("")
+                        break  # Encontramos uma melhoria, podemos parar de procurar para este cliente
         
         if not found_better:
             break
@@ -103,11 +106,11 @@ def main(filename):
     # Gera uma solução inicial aleatória
     initial_solution = generate_random_solution(num_customers, num_warehouses)
     
-    # Executa a pesquisa local usando a solução inicial aleatória
-    best_solution, best_cost, execution_time = local_search(initial_solution, data['warehouses'], data['customers'])
+    # Executa a busca local usando o método de Primeiro Melhor (First-Improvement)
+    best_solution, best_cost, execution_time = local_search_first_improvement(initial_solution, data['warehouses'], data['customers'])
     
-    # Exibe o resultado da pesquisa local
-    print("\nMelhor solução encontrada pela Pesquisa Local:")
+    # Exibe o resultado da busca local
+    print("\nMelhor solução encontrada pela Busca Local (Primeiro Melhor):")
     print(f"Solução: {best_solution}")
     print(f"Custo: {best_cost:.5f}")
     print(f"Tempo de execução: {execution_time:.5f} segundos")
