@@ -1,37 +1,37 @@
-§§§§§§§ 15 Beasley's §§§§§§§§§§§§§§§§§
-cap71     932615.750
-cap72     977799.400
-cap73     1010641.450
-cap74     1034976.975
-cap101    796648.437
-cap102    854704.200
-cap103    893782.112
-cap104    928941.750
-cap131    793439.562
-cap132    851495.325
-cap133    893076.712
-cap134    928941.750
-capa      17156454.478
-capb      12979071.582
-capc      11505594.329
-§§§§§§§ 20 Kratica's §§§§§§§§§§§§§§§§§
-KCAPMO1   1156.909
-KCAPMO2   1227.667
-KCAPMO3   1286.369
-KCAPMO4   1177.880
-KCAPMO5   1147.595
-KCAPMP1   2460.101
-KCAPMP2   2419.325
-KCAPMP3   2498.151
-KCAPMP4   2633.561
-KCAPMP5   2290.164
-KCAPMQ1   3591.273
-KCAPMQ2   3543.662
-KCAPMQ3   3476.806
-KCAPMQ4   3742.474
-KCAPMQ5   3751.326
-KCAPMR1   2349.856
-KCAPMR2   2344.757
-KCAPMR3   2183.235
-KCAPMR4   2433.110
-KCAPMR5   2344.353
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 15 Beasley's ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+cap71     932615.750        hill-940987.26250 greadyRandomize-953309.81250 genetic-949319.86250 tabu-
+cap72     977799.400       hill-992996.96250 greadyRandomize-1003078.40000 genetic-999910.36250 tabu-
+cap73     1010641.450       hill-1048430.77500 greadyRandomize-1023841.37500 genetic-1040903.70000 tabu-
+cap74     1034976.975       hill-1050591.18750 greadyRandomize-1038841.37500 genetic-1096344.88750 tabu-
+cap101    796648.437        hill-808774.81250 greadyRandomize-802191.27500 genetic-810541.26250 tabu-
+cap102    854704.200        hill-878150.40000 greadyRandomize-868838.60000 genetic-868911.50000 tabu-
+cap103    893782.112        hill-927319.05000 greadyRandomize-921917.30000 genetic-932291.58750 tabu-
+cap104    928941.750        hill-1018022.16250 greadyRandomize-961136.51250 genetic-1021060.32500 tabu-
+cap131    793439.562        hill-815977.15000 greadyRandomize-817492.73750 genetic-821925.82500 tabu-
+cap132    851495.325        hill-885298.87500 greadyRandomize-874773.38750 genetic-895955.98750 tabu-
+cap133    893076.712        hill-943781.33750 greadyRandomize-934927.86250 genetic-960298.08750 tabu-
+cap134    928941.750        hill-997025.37500 greadyRandomize-974020.35000 genetic-995370.35000 tabu-
+capa      17156454.478      hill-207755094.21356 greadyRandomize-44875468.21546 genetic-183324411.08522 tabu-                                                                 
+capb      12979071.582      hill-103109836.49167 greadyRandomize-34896484.18435 genetic-84042944.29729 tabu-
+capc      11505594.329      hill-82500332.16642 greadyRandomize-32171154.89746 genetic-64228257.01314 tabu-
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 20 Kratica's ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+KCAPMO1   1156.909          hill-4126.49100 greadyRandomize-1405.68000 genetic-3190.18800 tabu-
+KCAPMO2   1227.667          hill-4541.82300 greadyRandomize-1476.26900 genetic-3357.43300 tabu-
+KCAPMO3   1286.369          hill-4875.21200 greadyRandomize-1731.90900 genetic-3879.99400 tabu-
+KCAPMO4   1177.880          hill-4387.89400 greadyRandomize-1528.75100 genetic-3534.35800 tabu-
+KCAPMO5   1147.595          hill-4504.96400 greadyRandomize-1473.69400 genetic-3331.60500 tabu-
+KCAPMP1   2460.101          hill-15613.82100 greadyRandomize-4778.17200 genetic-13609.26700 tabu-
+KCAPMP2   2419.325          hill-17054.56600 greadyRandomize-5187.11500 genetic-15197.79000 tabu-
+KCAPMP3   2498.151          hill-18855.17700 greadyRandomize-5906.45100 genetic-17002.75200 tabu-
+KCAPMP4   2633.561          hill-19367.54600 greadyRandomize-6058.24200 genetic-17220.04600 tabu-
+KCAPMP5   2290.164          hill-18735.84400 greadyRandomize-4777.91100 genetic-13582.16400 tabu-
+KCAPMQ1   3591.273          hill-39780.27200 greadyRandomize-10503.13100 genetic-36495.53800 tabu-
+KCAPMQ2   3543.662          hill-39245.55500 greadyRandomize-10213.47600 genetic-38627.32100 tabu-
+KCAPMQ3   3476.806          hill-38438.68500 greadyRandomize-9656.26000 genetic-35282.37600 tabu-
+KCAPMQ4   3742.474          hill-41375.84300 greadyRandomize-10529.54500 genetic-34893.13600 tabu-
+KCAPMQ5   3751.326          hill-41473.70900 greadyRandomize-10106.86500 genetic-36213.95300 tabu-
+KCAPMR1   2349.856          hill-112451.07700 greadyRandomize-13639.51200 genetic-46370.07700 tabu-
+KCAPMR2   2344.757          hill-105590.88600 greadyRandomize-13107.14900 genetic-47614.99900 tabu-
+KCAPMR3   2183.235          hill-105092.66000 greadyRandomize-11607.39000 genetic-43486.31200 tabu-
+KCAPMR4   2433.110          hill-117606.05900 greadyRandomize-14622.22700 genetic-54404.24800 tabu-
+KCAPMR5   2344.353          hill-110938.97200 greadyRandomize-13852.20300 genetic-45682.15600 tabu-

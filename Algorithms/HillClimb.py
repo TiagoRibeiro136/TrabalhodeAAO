@@ -113,5 +113,5 @@ def main(filename):
     print(f"Tempo de execução: {execution_time:.5f} segundos")
 
 if __name__ == "__main__":
-    filename = "FicheirosTeste/M/Kcapmo1.txt"  # Nome do arquivo de entrada
+    filename = "FicheirosTeste/ORLIB/capa.txt"  # Nome do arquivo de entrada
     main(filename)
