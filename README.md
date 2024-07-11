@@ -16,4 +16,4 @@ capABC- esta pasta contem todos os seguintes algoritmos :
 Trabalho realizado por:
 Tiago Ribeiro - 8210136
 Leonel Carvalho - 8210127
-João Lemos - 8210114
+João Lemos - 8210124
