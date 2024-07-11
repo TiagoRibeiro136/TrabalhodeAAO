@@ -4,9 +4,14 @@
 Conteudo : 
 
 capABC- esta pasta contem todos os seguintes algoritmos :
+
 -Genetic Algorithm - Genetic.py
+
 -GRASP- Grasp.py
+
 -Hill Climb - HillClimb.py 
+
+-Tabu Search - TabuSearch.py
 
 Trabalho realizado por:
 Tiago Ribeiro - 8210136
