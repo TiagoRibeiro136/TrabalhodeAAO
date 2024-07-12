@@ -54,7 +54,7 @@ def calculate_total_cost(solution, warehouses, customers):
 def tabu_search(initial_solution, warehouses, customers, max_iterations, tabu_tenure, max_no_improvement_iterations):
     start_time = time.time()
     
-    # 2. Inicializar a solução corrente sc e a melhor solução encontrada sb.
+    # Inicializar a solução corrente (current_solution) e a melhor solução encontrada (best_solution).
     current_solution = initial_solution[:]
     best_solution = current_solution[:]
     best_cost = calculate_total_cost(best_solution, warehouses, customers)
@@ -69,11 +69,11 @@ def tabu_search(initial_solution, warehouses, customers, max_iterations, tabu_te
     print(f"Initial Cost: {best_cost:.5f}")
     print("")
     
-    # 3. Inicializar o contador de iterações k = 0.
+    # Inicializar o contador de iterações (iteration = 0).
     while iteration < max_iterations and no_improvement_iterations < max_no_improvement_iterations:
         neighborhood = []
         
-        # Gerar vizinhança N(sc)
+        # Gerar vizinhança N(current_solution)
         for customer_idx in range(len(customers)):
             current_warehouse_idx = current_solution[customer_idx]
             for new_warehouse_idx in range(len(warehouses)):
@@ -82,17 +82,17 @@ def tabu_search(initial_solution, warehouses, customers, max_iterations, tabu_te
                     new_solution[customer_idx] = new_warehouse_idx
                     neighborhood.append((new_solution, calculate_total_cost(new_solution, warehouses, customers)))
         
-        # 4. Se N(sc) - S(T) != ∅ ( indica que o algoritmo deve prosseguir apenas se houver pelo menos uma solução na vizinhança,que não esteja na lista tabu)
+        # Se N(current_solution) - S(tabu_list) != ∅ (indica que o algoritmo deve prosseguir apenas se houver pelo menos uma solução na vizinhança que não esteja na lista tabu)
         neighborhood = sorted(neighborhood, key=lambda x: x[1])
         found_better = False
         
         for new_solution, new_cost in neighborhood:
             if tuple(new_solution) not in tabu_list:
-                # Incrementar k e selecionar a melhor solução sp em N(sc) - S(T)
+                # Incrementar a iteração e selecionar a melhor solução (best_solution) em N(current_solution) - S(tabu_list)
                 current_solution = new_solution[:]
                 tabu_list.append(tuple(current_solution))
                 
-                # 5. Se f(sp) < f(sc), então sb = sp.
+                # Se f(new_solution) < f(current_solution), então best_solution = new_solution.
                 if new_cost < best_cost:
                     best_solution = current_solution[:]
                     best_cost = new_cost
@@ -103,7 +103,7 @@ def tabu_search(initial_solution, warehouses, customers, max_iterations, tabu_te
                     print(f"  Cost: {best_cost:.5f}")
                     print("")
                 else:
-                    # 6. Senão, N(sc) = N(sc) - sp
+                    # Senão, N(current_solution) = N(current_solution) - new_solution
                     neighborhood = [neighbor for neighbor in neighborhood if tuple(neighbor[0]) != tuple(new_solution)]
                 break
         
@@ -111,8 +111,8 @@ def tabu_search(initial_solution, warehouses, customers, max_iterations, tabu_te
             no_improvement_iterations += 1
         
         iteration += 1
-        # 7. Atualizar T
-        # A atualização da lista tabu ocorre durante a adição de novos elementos e remove automáticamente quando o limite é excedido
+        # Atualizar a lista tabu (S(tabu_list))
+        # A atualização da lista tabu ocorre durante a adição de novos elementos e remove automaticamente quando o limite é excedido
     
     end_time = time.time()
     execution_time = end_time - start_time
