@@ -152,5 +152,5 @@ def main(filename):
     print(output)  # Imprime a saída formatada
 
 if __name__ == "__main__":
-    filename = "FicheirosTeste/M/Kcapmr1.txt"  # Nome do ficheiro de entrada
+    filename = "FicheirosTeste/ORLIB/cap133.txt"  # Nome do ficheiro de entrada
     main(filename)  # Executa a função principal

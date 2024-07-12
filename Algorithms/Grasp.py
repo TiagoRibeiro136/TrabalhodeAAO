@@ -149,5 +149,5 @@ def main(filename):
     #     file.write(' '.join(map(str, best_solution)))
 
 if __name__ == "__main__":
-    filename = "FicheirosTeste/M/Kcapmo1.txt"  # Nome do arquivo de entrada
+    filename = "FicheirosTeste/ORLIB/cap133.txt"  # Nome do arquivo de entrada
     main(filename)  # Executa a função principal
