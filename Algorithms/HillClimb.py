@@ -1,18 +1,19 @@
 import time
 import random
 
+# Função para ler os dados do arquivo de entrada
 def read_data(filename):
     with open(filename, 'r') as file:
         lines = file.readlines()
 
-    # Extrair o número de armazéns e clientes
+    # Extrair o número de armazéns e clientes do cabeçalho do arquivo
     m, n = map(int, lines[0].split())
     data = {'warehouses': [], 'customers': []}
 
-    # Leitura dos armazéns
+    # Leitura dos dados dos armazéns
     for i in range(1, m + 1):
         parts = lines[i].split()
-        fixed_cost = float(parts[1])  # Custo fixo
+        fixed_cost = float(parts[1])  # Custo fixo do armazém
         data['warehouses'].append({'fixed_cost': fixed_cost})
 
     line_index = m + 1
@@ -32,6 +33,7 @@ def read_data(filename):
 
     return data
 
+# Função para calcular o custo total de uma solução de alocação
 def calculate_total_cost(solution, warehouses, customers):
     total_cost = 0
     warehouse_used = [False] * len(warehouses)  # Lista para rastrear se o armazém foi usado
@@ -50,6 +52,7 @@ def calculate_total_cost(solution, warehouses, customers):
     
     return total_cost
 
+# Função para realizar a busca local
 def local_search(initial_solution, warehouses, customers):
     start_time = time.time()
     
@@ -73,6 +76,7 @@ def local_search(initial_solution, warehouses, customers):
                     
                     new_cost = calculate_total_cost(new_solution, warehouses, customers)
                     
+                    # Verifica se a nova solução é melhor que a melhor solução atual
                     if new_cost < best_cost:
                         best_solution = new_solution[:]
                         best_cost = new_cost
@@ -82,36 +86,40 @@ def local_search(initial_solution, warehouses, customers):
                         print(f"  Cost: {best_cost:.5f}")
                         print("")
         
+        # Se não encontrou uma solução melhor, encerra o loop
         if not found_better:
             break
         else:
-            current_solution = best_solution[:]
+            current_solution = best_solution[:]  # Atualiza a solução atual para a melhor encontrada
     
     end_time = time.time()
     execution_time = end_time - start_time
     
     return best_solution, best_cost, execution_time
 
+# Função para gerar uma solução inicial aleatória
 def generate_random_solution(num_customers, num_warehouses):
     return [random.randint(0, num_warehouses - 1) for _ in range(num_customers)]
 
+# Função principal que coordena todo o processo
 def main(filename):
-    data = read_data(filename)
+    data = read_data(filename)  # Lê os dados do arquivo de entrada
     num_customers = len(data['customers'])
     num_warehouses = len(data['warehouses'])
     
     # Gera uma solução inicial aleatória
     initial_solution = generate_random_solution(num_customers, num_warehouses)
     
-    # Executa a pesquisa local usando a solução inicial aleatória
+    # Executa a busca local usando a solução inicial aleatória
     best_solution, best_cost, execution_time = local_search(initial_solution, data['warehouses'], data['customers'])
     
-    # Exibe o resultado da pesquisa local
+    # Exibe o resultado da busca local
     print("\nMelhor solução encontrada pela Pesquisa Local:")
     print(f"Solução: {best_solution}")
     print(f"Custo: {best_cost:.5f}")
     print(f"Tempo de execução: {execution_time:.5f} segundos")
 
+# Ponto de entrada do programa
 if __name__ == "__main__":
     filename = "FicheirosTeste/ORLIB/cap133.txt"  # Nome do arquivo de entrada
     main(filename)
