@@ -63,7 +63,7 @@ def initialize_population(data, pop_size):
     return population  # Retorna a população
 
 def select_parents(population, fitnesses, num_parents):
-    total_fitness = sum(fitnesses)  # Calcula a fitness total
+    total_fitness = sum(fitnesses)  # Calcula o custo total
     normalized_fitnesses = [f / total_fitness for f in fitnesses]  # Normaliza as fitnesses
     selected_indices = random.choices(range(len(population)), weights=normalized_fitnesses, k=num_parents)  # Seleciona os índices dos pais
     return [population[i] for i in selected_indices]  # Retorna os pais selecionados

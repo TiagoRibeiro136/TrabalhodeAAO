@@ -53,7 +53,7 @@ def calculate_total_cost(solution, warehouses, customers):
     return total_cost  # Retorna o custo total
 
 def greedy_randomized_construction(data, seed):
-    random.seed(seed)  # Define a semente para geração de números aleatórios
+    random.seed(seed)  # Define a seed para gerar números aleatórios
     warehouses = data['warehouses']
     customers = data['customers']
     solution = [-1] * len(customers)  # Inicializa a solução com -1 para cada cliente
@@ -88,7 +88,7 @@ def local_search(initial_solution, warehouses, customers):
     
     iteration = 0  # Inicializa o contador de iterações
     while True:
-        found_better = False  # Inicializa a variável para rastrear se uma melhor solução foi encontrada
+        found_better = False  # Inicializa a variável para procurar se uma melhor solução foi encontrada
         for customer_idx in range(len(customers)):
             current_warehouse_idx = current_solution[customer_idx]
             

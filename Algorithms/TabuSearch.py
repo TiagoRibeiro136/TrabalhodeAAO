@@ -54,7 +54,7 @@ def calculate_total_cost(solution, warehouses, customers):
 def tabu_search(initial_solution, warehouses, customers, max_iterations, tabu_tenure, max_no_improvement_iterations):
     start_time = time.time()
     
-    # 2. Inicializar a solução corrente sc e a melhor solução encontrada sb, fazendo sb = sc = s0.
+    # 2. Inicializar a solução corrente sc e a melhor solução encontrada sb.
     current_solution = initial_solution[:]
     best_solution = current_solution[:]
     best_cost = calculate_total_cost(best_solution, warehouses, customers)
@@ -82,7 +82,7 @@ def tabu_search(initial_solution, warehouses, customers, max_iterations, tabu_te
                     new_solution[customer_idx] = new_warehouse_idx
                     neighborhood.append((new_solution, calculate_total_cost(new_solution, warehouses, customers)))
         
-        # 4. Se N(sc) - S(T) != ∅
+        # 4. Se N(sc) - S(T) != ∅ ( indica que o algoritmo deve prosseguir apenas se houver pelo menos uma solução na vizinhança,que não esteja na lista tabu)
         neighborhood = sorted(neighborhood, key=lambda x: x[1])
         found_better = False
         
@@ -112,7 +112,7 @@ def tabu_search(initial_solution, warehouses, customers, max_iterations, tabu_te
         
         iteration += 1
         # 7. Atualizar T
-        # A atualização da lista tabu ocorre durante a adição de novos elementos e remoção automática quando o limite é excedido
+        # A atualização da lista tabu ocorre durante a adição de novos elementos e remove automáticamente quando o limite é excedido
     
     end_time = time.time()
     execution_time = end_time - start_time
@@ -130,13 +130,13 @@ def main(filename):
     # Gera uma solução inicial aleatória
     initial_solution = generate_random_solution(num_customers, num_warehouses)
     
-    # Executa a Busca Tabu
-    max_iterations = 1000  # Define o número máximo de iterações
+    # Executa a Tabu Search
+    max_iterations = 100  # Define o número máximo de iterações
     tabu_tenure = 10  # Define a duração da lista tabu
-    max_no_improvement_iterations = 100  # Define o número máximo de iterações consecutivas sem melhoria
+    max_no_improvement_iterations = 200  # Define o número máximo de iterações consecutivas sem melhoria
     best_solution, best_cost, execution_time = tabu_search(initial_solution, data['warehouses'], data['customers'], max_iterations, tabu_tenure, max_no_improvement_iterations)
     
-    # Exibe o resultado da busca tabu
+    # Exibe o resultado da Tabu Search
     print("\nMelhor solução encontrada pela Busca Tabu:")
     print(f"Solução: {best_solution}")
     print(f"Custo: {best_cost:.5f}")
